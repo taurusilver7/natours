@@ -12,7 +12,7 @@ const signToken = (id) =>
   });
 
 // creating jwt tokens in http only format.
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
 
   // sending a jwt as a browser cookie
@@ -21,8 +21,8 @@ const createSendToken = (user, statusCode, res) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
+    secure: req.secure || req.headers('x-forwarded-proto') === 'https',
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
   res.cookie('jwt', token, cookieOptions);
 
@@ -51,7 +51,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   // console.log(url);
   await new Email(newUser, url).sendWelcome();
 
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
 
   /*
     const token = signToken(newUser._id);
@@ -84,7 +84,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   //send token to client if everything is ok..
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 
   //   const token = signToken(user._id);
   //   res.status(200).json({
@@ -247,7 +247,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
   // 3.Update changePasswordAt property for the user
   // 4.Log the user in, send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 
   //   const token = signToken(user._id);
   //   res.status(200).json({
@@ -273,5 +273,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // User.findByIdAndUpdate will not work as intended in the current scenario.
 
   // 4. Log user in, send the JWT for accessing the protected routes.
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
