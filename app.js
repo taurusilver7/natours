@@ -22,6 +22,9 @@ const viewRouter = require('./routes/viewRoutes');
 
 const app = express();
 
+// trust proxy to set secure https connections for jwt token in authController.
+app.enable('trust proxy');
+
 // setting template engine
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
