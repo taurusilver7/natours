@@ -28,9 +28,6 @@ app.set('views', path.join(__dirname, 'views'));
 
 ////////////// middleware - function that can modify the incoming request data in the post request.
 
-// compression middleware
-app.use(compression());
-
 // built-in middleware for acessing static files.
 // app.use(express.static(`${__dirname}/public`));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -114,7 +111,7 @@ app.use('/api', limiter);
 // body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
 // An express in-built middleware to parse the data from forms
-// app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // cookie parser for readind data from the cookie.
 app.use(cookieParser());
 
@@ -127,9 +124,19 @@ app.use(xss());
 // prevent parameter pollution
 app.use(
   hpp({
-    whitelist: ['duration'],
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
   })
 );
+
+// compression middleware
+app.use(compression());
 
 // test middleware.
 app.use((req, res, next) => {
@@ -147,15 +154,17 @@ app.use('/api/v1/bookings', bookingRouter);
 
 // router for all undefined routes
 app.all('*', (req, res, next) => {
-  // res.status(404).json({
-  //   status: 'failed',
-  //   message: `Can't find ${req.originalUrl} on this server.`,
-  // });
+  /*
+  res.status(404).json({
+    status: 'failed',
+    message: `Can't find ${req.originalUrl} on this server.`,
+  });
 
-  // const err = new Error(`Can't find ${req.originalUrl} on this server.`);
-  // err.status = 'failed';
-  // err.statusCode = 404;
-  // next(err);
+  const err = new Error(`Can't find ${req.originalUrl} on this server.`);
+  err.status = 'failed';
+  err.statusCode = 404;
+  next(err);
+  */
 
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
@@ -163,21 +172,25 @@ app.all('*', (req, res, next) => {
 // GLOBAL error handling middleware to handle errors
 app.use(globalErrorHandler);
 
-// app.get('/', (req, res) => {
-//   res.status(200).json({
-//     message:
-//       'Hello Viewers!! Welcome to Natours. A touring api for all your needs..',
-//     app: 'Natours',
-//   });
-// });
-
-// app.post('/', (req, res) =>
-//   res.status(201).send('You can post to this endpoint!!')
-// );
-
-// app.get('/api/v1/tours', getTours);
-// app.get('/api/v1/tours/:id', getTour);
-// app.post('/api/v1/tours', createTour);
-// app.patch('/api/v1/tours/:id', updateTour);
-// app.delete('/api/v1/tours/:id', deleteTour)
+/*
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message:
+      'Hello Viewers!! Welcome to Natours. A touring api for all your needs..',
+    app: 'Natours',
+  });
+});
+*/
+/*
+app.post('/', (req, res) =>
+  res.status(201).send('You can post to this endpoint!!')
+);
+*/
+/*
+app.get('/api/v1/tours', getTours);
+app.get('/api/v1/tours/:id', getTour);
+app.post('/api/v1/tours', createTour);
+app.patch('/api/v1/tours/:id', updateTour);
+app.delete('/api/v1/tours/:id', deleteTour)
+*/
 module.exports = app;

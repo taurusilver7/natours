@@ -11,25 +11,37 @@ process.on('uncaughtException', (err) => {
 dotenv.config({ path: './config.env' });
 const app = require('./app');
 
+const options = {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: true,
+  useUnifiedTopology: true,
+};
+const start = new Date();
+console.log(`Connecting to Mongoose: ${start.toLocaleTimeString()}`);
+
+const tm = (startTime, failVal) => {
+  const end = new Date() - startTime;
+  const fail = end <= failVal ? 'pass' : 'fail';
+  return `${new Date().toLocaleTimeString()}: ${end
+    .toString()
+    .padStart(5, ' ')}ms: ${fail}`;
+};
+
 // console.log(process.env);
 
 mongoose
   // .connect(process.env.DATABASE_LOCAL, {
-  .connect(process.env.APPLICATION_CONNECTION_URL, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.APPLICATION_CONNECTION_URL, options)
   .then(() => {
     // console.log(con.connection);
-    console.log('DB connection was successful..');
+    console.log('DB connection was successful..', tm(start, 20000));
   });
 
 const port = process.env.PORT || 3000;
 
 const server = app.listen(port, () => {
-  console.log(`App running on port: ${port}`);
+  console.log(`App running on port: ${port}..`);
 });
 
 // handling unhandled promise rejection in the application.

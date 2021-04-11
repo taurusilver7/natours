@@ -11,26 +11,27 @@ const router = express.Router();
 // param-middleware - to check the validity of the id
 
 // router.param('id', tourController.checkId);
-
-// param-middleware :- checkBody middleware
-// router
-//   .route('/')
-//   .get(tourController.getTours)
-//   .post(tourController.checkBody, tourController.createTour);
-
+/*
+param-middleware :- checkBody middleware
+router
+  .route('/')
+  .get(tourController.getTours)
+  .post(tourController.checkBody, tourController.createTour);
+*/
 ////// API routes //////
 
 // POST /tour/tourId/review
 // GET /tour/tourId/review
 // GET /tour/tourId/review/reviewId
-
-// router
-//   .route('/:tourId/reviews')
-//   .post(
-//     authController.protect,
-//     authController.restrictTo('user'),
-//     reviewController.createReview
-//   );
+/*
+router
+  .route('/:tourId/reviews')
+  .post(
+    authController.protect,
+    authController.restrictTo('user'),
+    reviewController.createReview
+  );
+  */
 
 // ^^^  Redirecting to reviewRouter ^^^^
 router.use('/:tourId/reviews', reviewRoutes);
