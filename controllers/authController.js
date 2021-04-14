@@ -21,7 +21,7 @@ const createSendToken = (user, statusCode, req, res) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    secure: req.secure || req.headers('x-forwarded-proto') === 'https',
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
   };
 
   res.cookie('jwt', token, cookieOptions);
@@ -237,7 +237,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   });
 
   // 2.if token isn't expired && user, set new password.
-  if (!user) return next(new AppError('Token is expired or invalid', 400));
+  if (!user) return next(new AppError('Token has expired or invalid', 400));
 
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
