@@ -53,3 +53,11 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
   });
 });
+
+// handling sigterm signal to avoid abrupt application shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM RECIEVED. Shutting down gracefully.');
+  server.close(() => {
+    console.log('Process termianted!');
+  });
+});
