@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint - disable */
 // update the user data calling the API from the front-end
 /* create a funciton to update the data, call the function from the index.js.*/
 
@@ -15,8 +15,8 @@ export const updateSettings = async (data, type) => {
         : '/api/v1/users/update-me';
     const res = await axios({
       method: 'PATCH',
-      url: url,
-      data: data,
+      url,
+      data,
     });
 
     if (res.data.status === 'success')
