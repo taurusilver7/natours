@@ -1,9 +1,9 @@
 const multer = require('multer');
 const sharp = require('sharp');
 const Tour = require('../models/tourModel');
+const catchAsync = require('../utils/catchAsync');
 const factory = require('./handleFactory');
 const AppError = require('../utils/appError');
-const catchAsync = require('../utils/catchAsync');
 
 // multiple image uploads to tours as images / imageCover
 const multerStorage = multer.memoryStorage();
@@ -41,12 +41,11 @@ upload multiple imgs to a single field
 upload.array('images', 3);
 */
 
-exports.resizeTourImages = async (req, res, next) => {
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
   // console.log(req.files);
   if (!req.files.imageCover || !req.files.images) return next();
 
   req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
-
   // cover image
   await sharp(req.files.imageCover[0].buffer)
     .resize(2000, 1333)
@@ -64,12 +63,13 @@ exports.resizeTourImages = async (req, res, next) => {
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
         .toFile(`public/img/tours/${fileName}`);
+
       req.body.images.push(fileName);
     })
   );
   // only reach here when all the promises are consumed & req.body.images is updated.
   next();
-};
+});
 //////////   Testing json file ///////
 // const tours = JSON.parse(
 //   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
@@ -200,27 +200,28 @@ if (req.query.fields) {
 // });
 
 exports.getTour = factory.getOne(Tour, { path: 'reviews' });
+/*
+exports.getTour = catchAsync(async (req, res, next) => {
+  const tour = await Tour.findById(req.params.id).populate('reviews');
 
-// exports.getTour = catchAsync(async (req, res, next) => {
-//   const tour = await Tour.findById(req.params.id).populate('reviews');
+  //^^^^^^^^^^^^^ populate the guide data into the tour data ^^^^^^^^^^^////
+  const tour = await Tour.findById(req.params.id).populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt -passwordResetToken -passwordResetExpires',
+  });
+  // Tour.findOne((_id: req.params.id));
 
-// ^^^^^^^^^^^^^ populate the guide data into the tour data ^^^^^^^^^^^////
-// const tour = await Tour.findById(req.params.id).populate({
-//   path: 'guides',
-//   select: '-__v -passwordChangedAt -passwordResetToken -passwordResetExpires',
-// });
-// Tour.findOne(_id: req.params.id);
-
-//   if (!tour) {
-//     return next(new AppError('No tour found with the ID', 404));
-//   }
-//   res.status(200).json({
-//     status: 'success',
-//     data: {
-//       tour,
-//     },
-//   });
-// });
+  if (!tour) {
+    return next(new AppError('No tour found with the ID', 404));
+  }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
+    },
+  });
+});
+*/
 
 exports.createTour = factory.createOne(Tour);
 
@@ -277,7 +278,7 @@ exports.deleteTour = factory.deleteOne(Tour);
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
     {
-      $match: { ratingAvg: { $gte: 4.2 } },
+      $match: { ratingAvg: { $gte: 4.5 } },
     },
     {
       $group: {
@@ -373,6 +374,7 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
   const tours = await Tour.find({
     startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
   });
+
   res.status(200).json({
     status: 'success',
     results: tours.length,
@@ -394,6 +396,7 @@ exports.getDistance = catchAsync(async (req, res, next) => {
       new AppError('Please provide latitude, longitude in format lat,lng', 400)
     );
   }
+
   const distances = await Tour.aggregate([
     {
       $geoNear: {
