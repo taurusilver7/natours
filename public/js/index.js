@@ -4,7 +4,7 @@ import { displayMap } from './mapBox';
 import { login, logout } from './login';
 import { updateSettings } from './updateSettings';
 import { bookTour } from './stripe';
-import { showAlert } from './alert';
+import { showAlert } from './alerts';
 
 // DOM elements
 const mapBox = document.getElementById('map');
