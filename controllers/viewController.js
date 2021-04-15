@@ -4,6 +4,14 @@ const Booking = require('../models/bookingModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
+exports.alerts = (req, res, next) => {
+  const { alert } = req.query;
+  if (alert === 'booking')
+    res.locals.alert =
+      "Your booking was successful! Please check your email for a confirmation. If your booking doesn't show up here immediatly, please come back later.";
+  next();
+};
+
 exports.getOverview = catchAsync(async (req, res) => {
   // 1. get tour data from collection.
   const tours = await Tour.find();
@@ -53,6 +61,12 @@ exports.getLoginForm = (req, res) => {
     });
 };
 
+exports.getAccount = (req, res) => {
+  res.status(200).render('account', {
+    title: 'Your Account',
+  });
+};
+
 // booked tours
 exports.getMyTours = catchAsync(async (req, res, next) => {
   // 1. Find all bookings
@@ -74,12 +88,6 @@ exports.getMyTours = catchAsync(async (req, res, next) => {
     });
   next();
 });
-
-exports.getAccount = (req, res) => {
-  res.status(200).render('account', {
-    title: 'Your Account',
-  });
-};
 
 exports.updateUserData = catchAsync(async (req, res, next) => {
   // console.log('UPDATING USER DATA', req.body);
