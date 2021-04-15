@@ -1,6 +1,5 @@
-/*eslint-disable */
+/* eslint - disable */
 import axios from 'axios';
-import '@babel/polyfill';
 import { showAlert } from './alerts';
 
 export const login = async (email, password) => {
