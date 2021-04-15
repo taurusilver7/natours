@@ -30,12 +30,12 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour needs a difficulty scale'],
       enum: {
         values: ['easy', 'medium', 'difficult'],
-        message: 'Difficylty is either easy, medium , diffcult',
+        message: 'Difficylty is either easy, medium, diffcult',
       },
     },
     ratingAvg: {
       type: Number,
-      default: 4.2,
+      default: 4.5,
       min: [1, 'Rating must be > 1.0'],
       max: [5, 'Rating must be < 5.0'],
       set: (val) => Math.round(val * 10) / 10, //(4.6555 => 5) 46.66 => 47 , 4.7

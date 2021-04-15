@@ -71,7 +71,7 @@ reviewSchema.statics.calcAvgRating = async function (tourId) {
     },
   ]);
   // console.log(stats);
-  // Make the avg rating persisting to the database.
+  // Make the avg rating persistant to the database.
   if (stats.length > 0) {
     await Tour.findByIdAndUpdate(tourId, {
       ratingQty: stats[0].nRating,
